@@ -1,5 +1,10 @@
-﻿using System;
+﻿#region
+
+using System;
 using System.Collections.Generic;
+using rocnikacV4.Properties;
+
+#endregion
 
 namespace rocnikacV4
 {
@@ -7,8 +12,8 @@ namespace rocnikacV4
     {
         #region Pomocné proměnné
 
-        private int[] xs = { 2, -2, 0, 0, 1, 1, -1, -1 };
-        private int[] ys = { 0, 0, 2, -2, 1, -1, -1, 1 };
+        private readonly int[] xs = {2, -2, 0, 0, 1, 1, -1, -1};
+        private readonly int[] ys = {0, 0, 2, -2, 1, -1, -1, 1};
 
         #endregion Pomocné proměnné
 
@@ -17,7 +22,7 @@ namespace rocnikacV4
         private void walkersMoves(Gameboard gb, Fairway fw, int dx, int dy)
         {
             int x = Convert.ToInt32(fw.Name.Substring(1)) - 1;
-            int y = Convert.ToInt32(fw.Name[0]) - (int)'A';
+            int y = Convert.ToInt32(fw.Name[0]) - 'A';
 
             if (x + dx >= 0 &&
                 x + dx < GlobalVariables.size &&
@@ -26,7 +31,7 @@ namespace rocnikacV4
                 gb.Board[x + dx, y + dy].Player == 0)
             {
                 List<String> moves = fw.Moves;
-                moves.Add((char)(y + dy + 'A') + "" + (x + dx + 1));
+                moves.Add((char) (y + dy + 'A') + "" + (x + dx + 1));
                 fw.StoneMove = moves.Count > 0 ? true : false;
                 fw.Moves = moves;
             }
@@ -48,7 +53,7 @@ namespace rocnikacV4
         }
 
         /// <summary>
-        /// Funkce kontrolujici, zda v danem smeru je za figurkou volno
+        ///     Funkce kontrolujici, zda v danem smeru je za figurkou volno
         /// </summary>
         /// <param name="gb">Instance tridy hraci deska</param>
         /// <param name="fw">Instance tridy hraci pole reprezentujici odkud kontrolujeme</param>
@@ -59,23 +64,23 @@ namespace rocnikacV4
         {
             status playerOnMove = gb.PlayingWhite ? status.whitePlayer : status.blackPlayer;
             int x = Convert.ToInt32(fw.Name.Substring(1)) - 1;
-            int y = Convert.ToInt32(fw.Name[0]) - (int)'A';
+            int y = Convert.ToInt32(fw.Name[0]) - 'A';
 
-            if (x + 2 * dx < GlobalVariables.size &&
-                x + 2 * dx >= 0 &&
-                y + 2 * dy < GlobalVariables.size &&
-                y + 2 * dy >= 0 &&
-                (int)gb.Board[x + dx, y + dy].Player == -(int)playerOnMove &&
-                gb.Board[x + 2 * dx, y + 2 * dy].Player == 0)
+            if (x + 2*dx < GlobalVariables.size &&
+                x + 2*dx >= 0 &&
+                y + 2*dy < GlobalVariables.size &&
+                y + 2*dy >= 0 &&
+                (int) gb.Board[x + dx, y + dy].Player == -(int) playerOnMove &&
+                gb.Board[x + 2*dx, y + 2*dy].Player == 0)
                 return true;
             else return false;
         }
 
         private TreeNode genWalJumpTree(Gameboard gb, Fairway fw)
         {
-            TreeNode root = new TreeNode();
+            var root = new TreeNode();
             int x = Convert.ToInt32(fw.Name.Substring(1)) - 1;
-            int y = Convert.ToInt32(fw.Name[0]) - (int)'A';
+            int y = Convert.ToInt32(fw.Name[0]) - 'A';
 
             for (int i = 0; i < 8; i++)
             {
@@ -84,7 +89,7 @@ namespace rocnikacV4
                     Gameboard potomek = gb.gameboardCopy();
                     Fairway from = potomek.Board[x, y];
                     Fairway over = potomek.Board[x + xs[i], y + ys[i]];
-                    Fairway to = potomek.Board[x + 2 * xs[i], y + 2 * ys[i]];
+                    Fairway to = potomek.Board[x + 2*xs[i], y + 2*ys[i]];
 
                     TreeNode jump;
 
@@ -115,21 +120,22 @@ namespace rocnikacV4
             status playerOnMove = gb.PlayingWhite ? status.whitePlayer : status.blackPlayer;
             List<string> moves = fw.Moves;
             int x = Convert.ToInt32(fw.Name.Substring(1)) - 1;
-            int y = Convert.ToInt32(fw.Name[0]) - (int)'A';
+            int y = Convert.ToInt32(fw.Name[0]) - 'A';
             int temp = 0;
 
             for (int i = 0; i < 8; i++)
             {
                 for (int j = 1;
-                    x + j * xs[i] < GlobalVariables.size &&
-                    x + j * xs[i] >= 0 &&
-                    y + j * ys[i] >= 0 &&
-                    y + j * ys[i] < GlobalVariables.size &&
-                    gb.Board[x + j * xs[i], y + j * ys[i]].Player == status.free; j++)
+                     x + j*xs[i] < GlobalVariables.size &&
+                     x + j*xs[i] >= 0 &&
+                     y + j*ys[i] >= 0 &&
+                     y + j*ys[i] < GlobalVariables.size &&
+                     gb.Board[x + j*xs[i], y + j*ys[i]].Player == status.free;
+                     j++)
                 {
-                    if (gb.Board[x + j * xs[i], y + j * ys[i]].Player == 0)
+                    if (gb.Board[x + j*xs[i], y + j*ys[i]].Player == 0)
                     {
-                        string move = (char)(y + j * ys[i] + 'A') + "" + (x + j * xs[i] + 1);
+                        string move = (char) (y + j*ys[i] + 'A') + "" + (x + j*xs[i] + 1);
                         moves.Add(move);
                     }
                     temp = j + 1;
@@ -142,17 +148,17 @@ namespace rocnikacV4
 
         private List<Fairway> queAfterJumpDests(Gameboard gb, Fairway fw, int dx, int dy)
         {
-            List<Fairway> result = new List<Fairway>();
+            var result = new List<Fairway>();
             int x = Convert.ToInt32(fw.Name.Substring(1)) - 1;
-            int y = Convert.ToInt32(fw.Name[0]) - (int)'A';
+            int y = Convert.ToInt32(fw.Name[0]) - 'A';
 
             for (int j = 0;
-                   x + dx < GlobalVariables.size &&
-                   x + dx >= 0 &&
-                   y + dy < GlobalVariables.size &&
-                   y + dy >= 0 &&
-                   (gb.Board[x + dx, y + dy].Player == status.free);
-                   j++)
+                 x + dx < GlobalVariables.size &&
+                 x + dx >= 0 &&
+                 y + dy < GlobalVariables.size &&
+                 y + dy >= 0 &&
+                 (gb.Board[x + dx, y + dy].Player == status.free);
+                 j++)
             {
                 result.Add(gb.Board[x + dx, y + dy]);
                 x += dx;
@@ -163,50 +169,51 @@ namespace rocnikacV4
 
         private TreeNode genQueJumpTree(Gameboard gb, Fairway fw)
         {
-            TreeNode root = new TreeNode();
-            List<string> moves = new List<string>();
+            var root = new TreeNode();
+            var moves = new List<string>();
             int x = Convert.ToInt32(fw.Name.Substring(1)) - 1;
-            int y = Convert.ToInt32(fw.Name[0]) - (int)'A';
+            int y = Convert.ToInt32(fw.Name[0]) - 'A';
             status playerOnMove = gb.PlayingWhite ? status.whitePlayer : status.blackPlayer;
 
             for (int i = 0; i < 8; i++)
             {
                 bool jump = false;
                 for (int j = 1;
-                    x + j * xs[i] < GlobalVariables.size &&
-                    x + j * xs[i] >= 0 &&
-                    y + j * ys[i] < GlobalVariables.size &&
-                    y + j * ys[i] >= 0; j++)
+                     x + j*xs[i] < GlobalVariables.size &&
+                     x + j*xs[i] >= 0 &&
+                     y + j*ys[i] < GlobalVariables.size &&
+                     y + j*ys[i] >= 0;
+                     j++)
                 {
                     // pokud je vedle volno, pridej do moves
-                    if (gb.Board[x + j * xs[i], y + j * ys[i]].Player == status.free && !jump)
+                    if (gb.Board[x + j*xs[i], y + j*ys[i]].Player == status.free && !jump)
                     {
-                        string move = (char)(y + j * ys[i] + 'A') + "" + (x + j * xs[i] + 1);
+                        string move = (char) (y + j*ys[i] + 'A') + "" + (x + j*xs[i] + 1);
                     }
-                    // pokud je vedle tvoje vlastni figurka, prerus
-                    else if (gb.Board[x + j * xs[i], y + j * ys[i]].Player == playerOnMove)
+                        // pokud je vedle tvoje vlastni figurka, prerus
+                    else if (gb.Board[x + j*xs[i], y + j*ys[i]].Player == playerOnMove)
                     {
                         break;
                     }
                     else if (
-                        x + (j + 1) * xs[i] < GlobalVariables.size &&
-                        x + (j + 1) * xs[i] >= 0 &&
-                        y + (j + 1) * ys[i] >= 0 &&
-                        y + (j + 1) * ys[i] < GlobalVariables.size &&
-                        (int)gb.Board[x + j * xs[i], y + j * ys[i]].Player == -(int)playerOnMove &&
-                        gb.Board[x + (j + 1) * xs[i], y + (j + 1) * ys[i]].Player == status.free)
+                        x + (j + 1)*xs[i] < GlobalVariables.size &&
+                        x + (j + 1)*xs[i] >= 0 &&
+                        y + (j + 1)*ys[i] >= 0 &&
+                        y + (j + 1)*ys[i] < GlobalVariables.size &&
+                        (int) gb.Board[x + j*xs[i], y + j*ys[i]].Player == -(int) playerOnMove &&
+                        gb.Board[x + (j + 1)*xs[i], y + (j + 1)*ys[i]].Player == status.free)
                     {
                         jump = true;
                         Gameboard potomek = gb.gameboardCopy();
                         Fairway from = potomek.Board[x, y];
-                        Fairway over = potomek.Board[x + j * xs[i], y + j * ys[i]];
-                        Fairway to = potomek.Board[x + (j + 1) * xs[i], y + (j + 1) * ys[i]];
+                        Fairway over = potomek.Board[x + j*xs[i], y + j*ys[i]];
+                        Fairway to = potomek.Board[x + (j + 1)*xs[i], y + (j + 1)*ys[i]];
 
                         makeJump(from, over, to);
                         List<Fairway> destinies = queAfterJumpDests(potomek, to, xs[i], ys[i]);
                         destinies.Insert(0, to);
 
-                        foreach (Fairway des in destinies)
+                        foreach (var des in destinies)
                         {
                             TreeNode node = genQueJumpTree(potomek, des);
                             node.over = over.Name;
@@ -232,7 +239,7 @@ namespace rocnikacV4
         {
             status playerOnMove = gb.PlayingWhite ? status.whitePlayer : status.blackPlayer;
 
-            foreach (Fairway fw in gb.Board)
+            foreach (var fw in gb.Board)
             {
                 if (fw.Player == playerOnMove)
                     generateMoves(gb, fw);
@@ -242,8 +249,8 @@ namespace rocnikacV4
         public void generateMoves(Gameboard gb, Fairway fw)
         {
             genJumps(gb, fw);
-            List<string> newDests = new List<string>();
-            List<string> newOvers = new List<string>();
+            var newDests = new List<string>();
+            var newOvers = new List<string>();
 
             if (fw.Jump)
             {
@@ -306,9 +313,9 @@ namespace rocnikacV4
             fw.Overs = new List<string>();
             List<string> routes = root.allRoutes(root);
 
-            foreach (string route in routes)
+            foreach (var route in routes)
             {
-                List<string> r = new List<string>(route.Split('-'));
+                var r = new List<string>(route.Split('-'));
                 r.RemoveAll(c => c.Equals(""));
                 int rank = 0;
                 string dest = "";
@@ -316,7 +323,7 @@ namespace rocnikacV4
                 for (int i = 0; i < r.Count; i += 2)
                 {
                     x = Convert.ToInt32(r[i].Substring(1)) - 1;
-                    y = Convert.ToInt32(r[i][0]) - (int)'A';
+                    y = Convert.ToInt32(r[i][0]) - 'A';
                     rank += gb.Board[x, y].Queen ? 3 : 2;
                     if (over == "")
                         over = r[i];
@@ -358,7 +365,7 @@ namespace rocnikacV4
 
                 if (to.Jump && bQ == aQ)
                 {
-                    foreach (Fairway fw in gb.Board)
+                    foreach (var fw in gb.Board)
                     {
                         fw.Jump = false;
                         fw.StoneMove = false;
@@ -387,7 +394,7 @@ namespace rocnikacV4
                 makeMove(from, to);
                 setQueen(to);
 
-                foreach (Fairway fw in gb.Board)
+                foreach (var fw in gb.Board)
                 {
                     fw.Jump = false;
                     fw.StoneMove = false;
@@ -407,7 +414,7 @@ namespace rocnikacV4
         }
 
         /// <summary>
-        /// Funkce realizujici skok
+        ///     Funkce realizujici skok
         /// </summary>
         /// <param name="from">pole ze ktereho se tahne</param>
         /// <param name="over">pole pres ktere se tahne</param>
@@ -420,7 +427,7 @@ namespace rocnikacV4
         }
 
         /// <summary>
-        /// Funkce reprezentujici provedeni tahu
+        ///     Funkce reprezentujici provedeni tahu
         /// </summary>
         /// <param name="from">Instance tridy hraci pole - odkud se tahne</param>
         /// <param name="to">Instance tridy hraci pole - kam se tahne</param>
@@ -440,7 +447,7 @@ namespace rocnikacV4
         }
 
         /// <summary>
-        /// Funkce uvolnujici hraci pole
+        ///     Funkce uvolnujici hraci pole
         /// </summary>
         /// <param name="fw">Hraci pole, ktere ma byt uvolneno</param>
         private void setFree(Fairway fw)
@@ -455,7 +462,7 @@ namespace rocnikacV4
         }
 
         /// <summary>
-        /// Funkce nastavujici hraci figurku na kralovnu, pokud dosla na druhy konec hraci desky
+        ///     Funkce nastavujici hraci figurku na kralovnu, pokud dosla na druhy konec hraci desky
         /// </summary>
         /// <param name="fw"></param>
         private void setQueen(Fairway fw)
@@ -470,7 +477,7 @@ namespace rocnikacV4
                     if (x == GlobalVariables.size - 1)
                     {
                         fw.Queen = true;
-                        fw.Image = Properties.Resources.queen_black;
+                        fw.Image = Resources.queen_black;
                     }
                     break;
 
@@ -478,7 +485,7 @@ namespace rocnikacV4
                     if (x == 0)
                     {
                         fw.Queen = true;
-                        fw.Image = Properties.Resources.queen_white;
+                        fw.Image = Resources.queen_white;
                     }
                     break;
             }
@@ -489,13 +496,13 @@ namespace rocnikacV4
         #region Ostatní pomocné metody (kontrola vyhry, zahajeni hra,..)
 
         /// <summary>
-        /// Funkce kontrolujici, zda uz byla hra dohrana
+        ///     Funkce kontrolujici, zda uz byla hra dohrana
         /// </summary>
         /// <param name="gb">Instance tridy hraci deska</param>
         /// <returns>status.free pokud nikdo nevyhral, status.draw, pokud 60 tahu nedoslo ke skoku v ostatnich pripadech vraci status.[vyherce]</returns>
         public status checkWinner(Gameboard gb)
         {
-            status result = status.free;
+            var result = status.free;
             // pokud se 60 tahu netahlo, remiza
             if (gb.MovesWithoutJump == GlobalVariables.draw)
                 result = status.draw;
@@ -511,18 +518,18 @@ namespace rocnikacV4
         }
 
         /// <summary>
-        /// Funkce vracejici hracovi vybratelne figury
+        ///     Funkce vracejici hracovi vybratelne figury
         /// </summary>
         /// <param name="gb">Instance hraci desky</param>
         /// <returns>pole hracich poli, jemiz je mozne tahnout</returns>
         public List<Fairway> choosableFigures(Gameboard gb)
         {
-            List<Fairway> result = new List<Fairway>();
+            var result = new List<Fairway>();
             status player = gb.PlayingWhite ? status.whitePlayer : status.blackPlayer;
             int rank = 0;
 
             // projdeme vsechny hraci policka
-            foreach (Fairway fw in gb.Board)
+            foreach (var fw in gb.Board)
             {
                 // pokud se jedna o hracovu figurku
                 if (fw.Player == player)
@@ -541,15 +548,15 @@ namespace rocnikacV4
                                 result = new List<Fairway>();
                                 result.Add(fw);
                             }
-                            // pokud je rank stejny, jak nynejsi hodnota, pridame pole mezi vysledky
+                                // pokud je rank stejny, jak nynejsi hodnota, pridame pole mezi vysledky
                             else if (fw.Ranks[i] == rank)
                             {
                                 result.Add(fw);
                             }
                         }
                     }
-                    // pokud figurka nemuze skakat a rank je na hodnote 0 (neni znam zadny dosavadni skok)
-                    // a figurka se muze hybat, pridame ji do vysledku
+                        // pokud figurka nemuze skakat a rank je na hodnote 0 (neni znam zadny dosavadni skok)
+                        // a figurka se muze hybat, pridame ji do vysledku
                     else if (rank == 0 && fw.StoneMove)
                     {
                         if (!result.Contains(fw))

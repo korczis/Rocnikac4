@@ -1,5 +1,9 @@
-﻿using System.Collections.Generic;
+﻿#region
+
+using System.Collections.Generic;
 using System.Windows.Forms;
+
+#endregion
 
 namespace rocnikacV4
 {
@@ -14,64 +18,7 @@ namespace rocnikacV4
     public class Fairway : PictureBox
     {
         // sloty
-        private status player;          // slot predstavujici, zda se jedna o cerneho/bileho hrace nebo volne pole
-
-        private bool queen;             // slot jedna se o kralovnu
-        private bool jump;              // slot muze figurka skakat
-        private bool stoneMove;         // slot muze se figurka hybat
-        private List<string> moves;     // slot seznam moznych tahu
-        private List<string> dests;
-        private List<string> overs;
-        private List<int> ranks;
-
-        // getry a setry
-        public status Player
-        {
-            get { return player; }
-            set { player = value; }
-        }
-
-        public bool Queen
-        {
-            get { return queen; }
-            set { queen = value; }
-        }
-
-        public bool Jump
-        {
-            get { return jump; }
-            set { jump = value; }
-        }
-
-        public bool StoneMove
-        {
-            get { return stoneMove; }
-            set { stoneMove = value; }
-        }
-
-        public List<string> Dests
-        {
-            get { return this.dests; }
-            set { this.dests = value; }
-        }
-
-        public List<string> Overs
-        {
-            get { return this.overs; }
-            set { this.overs = value; }
-        }
-
-        public List<int> Ranks
-        {
-            get { return this.ranks; }
-            set { this.ranks = value; }
-        }
-
-        public List<string> Moves
-        {
-            get { return moves; }
-            set { moves = value; }
-        }
+        private status player; // slot predstavujici, zda se jedna o cerneho/bileho hrace nebo volne pole
 
         public Fairway()
         {
@@ -84,23 +31,6 @@ namespace rocnikacV4
             Ranks = new List<int>();
         }
 
-        public Fairway Clone()
-        {
-            Fairway result = new Fairway();
-
-            result.player = this.Player;
-            result.Queen = this.Queen;
-            result.Jump = this.Jump;
-            result.StoneMove = this.StoneMove;
-            result.Moves = this.Moves;
-            result.Name = this.Name;
-            result.Dests = this.Dests;
-            result.Overs = this.Overs;
-            result.Ranks = this.Ranks;
-
-            return result;
-        }
-
         public Fairway(status player)
         {
             Player = player;
@@ -110,6 +40,44 @@ namespace rocnikacV4
             Moves = new List<string>();
             Dests = new List<string>();
             Overs = new List<string>();
+        }
+
+        // getry a setry
+        public status Player
+        {
+            get { return player; }
+            set { player = value; }
+        }
+
+        public bool Queen { get; set; }
+
+        public bool Jump { get; set; }
+
+        public bool StoneMove { get; set; }
+
+        public List<string> Dests { get; set; }
+
+        public List<string> Overs { get; set; }
+
+        public List<int> Ranks { get; set; }
+
+        public List<string> Moves { get; set; }
+
+        public Fairway Clone()
+        {
+            var result = new Fairway();
+
+            result.player = Player;
+            result.Queen = Queen;
+            result.Jump = Jump;
+            result.StoneMove = StoneMove;
+            result.Moves = Moves;
+            result.Name = Name;
+            result.Dests = Dests;
+            result.Overs = Overs;
+            result.Ranks = Ranks;
+
+            return result;
         }
     }
 }

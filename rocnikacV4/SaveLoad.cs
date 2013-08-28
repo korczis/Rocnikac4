@@ -1,6 +1,10 @@
-﻿using System;
+﻿#region
+
+using System;
 using System.Collections.Generic;
 using System.Xml;
+
+#endregion
 
 namespace rocnikacV4
 {
@@ -8,16 +12,12 @@ namespace rocnikacV4
     {
         #region Konstruktor
 
-        public SaveLoad()
-        {
-        }
-
         #endregion Konstruktor
 
         #region Pomocné funkce realizující zápis do XML soubor
 
         /// <summary>
-        /// Funkce pridavajici tah jako xml element
+        ///     Funkce pridavajici tah jako xml element
         /// </summary>
         /// <param name="writer">XML writer</param>
         /// <param name="move">Instance tridy Move reprezentujici tah</param>
@@ -31,7 +31,7 @@ namespace rocnikacV4
         }
 
         /// <summary>
-        /// Funkce pridavajici do xml souboru element HRACI
+        ///     Funkce pridavajici do xml souboru element HRACI
         /// </summary>
         /// <param name="writer">XML writer</param>
         /// <param name="whitePlayer">Obtiznost bileho hrace</param>
@@ -45,7 +45,7 @@ namespace rocnikacV4
         }
 
         /// <summary>
-        /// Funkce pridavajici do xml souboru parametry hraci desky
+        ///     Funkce pridavajici do xml souboru parametry hraci desky
         /// </summary>
         /// <param name="writer">XML writer</param>
         /// <param name="startsWhite">Zacinajici hrac == bily hrac</param>
@@ -63,7 +63,7 @@ namespace rocnikacV4
         #region Uložení hry
 
         /// <summary>
-        /// Funkce ukladajici rozehratou / dokoncenou hru jako xml soubor
+        ///     Funkce ukladajici rozehratou / dokoncenou hru jako xml soubor
         /// </summary>
         /// <param name="history">List tahu</param>
         /// <param name="whitePlayer">Obtiznost bileho hrace</param>
@@ -71,9 +71,10 @@ namespace rocnikacV4
         /// <param name="startsWhite">Zacinajici bily hrac</param>
         /// <param name="showHelp">Zobrazeni napovedy</param>
         /// <param name="fileName">Soubor, do ktereho ma byt zapsano</param>
-        public void saveGame(List<Move> history, int whitePlayer, int blackPlayer, bool startsWhite, bool showHelp, string fileName)
+        public void saveGame(List<Move> history, int whitePlayer, int blackPlayer, bool startsWhite, bool showHelp,
+                             string fileName)
         {
-            XmlWriterSettings setting = new XmlWriterSettings();
+            var setting = new XmlWriterSettings();
             setting.Indent = true;
             setting.NewLineOnAttributes = true;
 
@@ -94,7 +95,7 @@ namespace rocnikacV4
                 writer.WriteStartElement("HISTORY");
 
                 // pridame vsechny prvky historie
-                foreach (Move move in history)
+                foreach (var move in history)
                     addMove(writer, move);
 
                 // uzavreme tag historie
@@ -113,7 +114,7 @@ namespace rocnikacV4
         #region Načtení hry
 
         /// <summary>
-        /// Funkce provadejici nacteni hry a zkontrolovani, zda se jedna o korektni ulozeni
+        ///     Funkce provadejici nacteni hry a zkontrolovani, zda se jedna o korektni ulozeni
         /// </summary>
         /// <param name="filePath">cesta k souboru</param>
         /// <param name="gb">Hraci deska, na niz maji byt zmeny provedeny</param>
@@ -124,7 +125,7 @@ namespace rocnikacV4
             string to = "";
             Fairway fwFrom;
             Fairway fwTo;
-            Rules rules = new Rules();
+            var rules = new Rules();
 
             gb.Board = gb.newBoard();
 
@@ -136,7 +137,7 @@ namespace rocnikacV4
                     {
                         switch (reader.Name)
                         {
-                            // nacteme si obtiznost bileho hrace a nastavime
+                                // nacteme si obtiznost bileho hrace a nastavime
                             case "WHITE":
                                 if (reader.Read())
                                 {
@@ -144,7 +145,7 @@ namespace rocnikacV4
                                     gb.WhitePlayer = whitePlayer;
                                 }
                                 break;
-                            // nacteme si obtiznost cerneho hrace a nastavime
+                                // nacteme si obtiznost cerneho hrace a nastavime
                             case "BLACK":
                                 if (reader.Read())
                                 {
@@ -153,7 +154,7 @@ namespace rocnikacV4
                                 }
                                 break;
 
-                            // nacteme si zacinajiciho hrace a nastavime
+                                // nacteme si zacinajiciho hrace a nastavime
                             case "STARTS":
                                 if (reader.Read())
                                 {
@@ -161,7 +162,7 @@ namespace rocnikacV4
                                     gb.StartsWhite = startsWhite;
                                 }
                                 break;
-                            //
+                                //
                             case "SHOWHELP":
                                 if (reader.Read())
                                 {
@@ -172,12 +173,12 @@ namespace rocnikacV4
 
                             case "FROM":
                                 if (reader.Read())
-                                    from = (string)reader.Value.Trim();
+                                    from = reader.Value.Trim();
                                 break;
 
                             case "TO":
                                 if (reader.Read())
-                                    to = (string)reader.Value.Trim();
+                                    to = reader.Value.Trim();
                                 fwFrom = gb.getFigure(from);
                                 fwTo = gb.getFigure(to);
                                 rules.generateMoves(gb);

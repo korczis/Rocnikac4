@@ -1,25 +1,31 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace rocnikacV4
+﻿namespace rocnikacV4
 {
     public class Move
     {
-        string _from;
-        string _to;
-        string _player;
+        private readonly string _from;
+        private readonly string _player;
+        private readonly string _to;
 
         public Move(string from, string to, string player)
         {
-            this._from = from;
-            this._to = to;
-            this._player = player;
+            _from = from;
+            _to = to;
+            _player = player;
         }
 
-        public string From { get { return _from; }}
-        public string To { get { return _to; } }
-        public string Player { get { return _player; } }
+        public string From
+        {
+            get { return _from; }
+        }
+
+        public string To
+        {
+            get { return _to; }
+        }
+
+        public string Player
+        {
+            get { return _player; }
+        }
     }
 }

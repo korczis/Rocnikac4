@@ -1,11 +1,14 @@
-﻿using System;
+﻿#region
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.IO;
-using System.Linq;
 using System.Windows.Forms;
+using rocnikacV4.Properties;
 
+#endregion
 
 namespace rocnikacV4
 {
@@ -13,9 +16,9 @@ namespace rocnikacV4
     {
         #region Proměnné
 
+        private readonly AI ai = new AI();
         private Gameboard gb = new Gameboard();
         private Rules r = new Rules();
-        private AI ai = new AI();
 
         #endregion Proměnné
 
@@ -33,59 +36,59 @@ namespace rocnikacV4
 
         #region Getry/Setry a metody spravujici mainDialog
 
-        public BackgroundWorker bw { get; set; }
-
-        public Gameboard GB
-        {
-            get { return this.gb; }
-            set { this.gb = value; }
-        }
-
         public Friska_dama()
         {
             InitializeComponent();
             bw = new BackgroundWorker();
-            bw.DoWork += new DoWorkEventHandler(bw_DoWork);
-            bw.RunWorkerCompleted += new RunWorkerCompletedEventHandler(bw_RunWorkerCompleted);
+            bw.DoWork += bw_DoWork;
+            bw.RunWorkerCompleted += bw_RunWorkerCompleted;
             bw.WorkerSupportsCancellation = true;
             bw.WorkerReportsProgress = false;
         }
 
+        public BackgroundWorker bw { get; set; }
+
+        public Gameboard GB
+        {
+            get { return gb; }
+            set { gb = value; }
+        }
+
         public Button UndoButton
         {
-            get { return this.bUndo; }
+            get { return bUndo; }
         }
 
         public Button RedoButton
         {
-            get { return this.bRedo; }
+            get { return bRedo; }
         }
 
         public ListBox History
         {
-            get { return this.lbHistory; }
-            set { this.lbHistory = value; }
+            get { return lbHistory; }
+            set { lbHistory = value; }
         }
 
         public Button ButtonPause
         {
-            get { return this.pauseButton; }
-            set { this.pauseButton = value; }
+            get { return pauseButton; }
+            set { pauseButton = value; }
         }
 
         public void cleanHistory()
         {
-            this.History.Items.Clear();
+            History.Items.Clear();
         }
 
         public void disableSettings()
         {
-            this.settings.Enabled = false;
+            settings.Enabled = false;
         }
 
         public void enableSettings()
         {
-            this.settings.Enabled = true;
+            settings.Enabled = true;
         }
 
         public void disableUndoButton()
@@ -108,7 +111,6 @@ namespace rocnikacV4
             RedoButton.Enabled = true;
         }
 
-
         #endregion Getry/Setry a metody spravujici mainDialog
 
         #region Inicializace okna / přidání popisků aj.
@@ -123,19 +125,19 @@ namespace rocnikacV4
                 // pismena
                 l = new Label();
                 l.AutoSize = true;
-                l.Location = new Point(LETTER_SHIFT_X + i * FAIRWAY_WIDTH, LETTER_Y_PADDING);
+                l.Location = new Point(LETTER_SHIFT_X + i*FAIRWAY_WIDTH, LETTER_Y_PADDING);
                 l.Text = letter.ToString();
                 Controls.Add(l);
 
                 // cisla
                 l = new Label();
-                l.Location = new Point(0, LETTER_SHIFT_Y + i * FAIRWAY_HEIGHT);
+                l.Location = new Point(0, LETTER_SHIFT_Y + i*FAIRWAY_HEIGHT);
                 l.AutoSize = true;
-                l.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+                l.TextAlign = ContentAlignment.MiddleRight;
                 l.Text = (i + 1).ToString();
                 Controls.Add(l);
 
-                letter = (char)((int)letter + 1);
+                letter = (char) (letter + 1);
             }
         }
 
@@ -152,15 +154,15 @@ namespace rocnikacV4
                     fw = new Fairway();
                     fw.Size = new Size(FAIRWAY_WIDTH, FAIRWAY_HEIGHT);
                     fw.Enabled = false;
-                    fw.Location = new Point(FAIRWAY_SHIFT + (i * FAIRWAY_HEIGHT), 2 * FAIRWAY_SHIFT + (j * FAIRWAY_WIDTH));
-                    fw.BackgroundImage = ((i + j) % 2 == 1) ? Properties.Resources.board_dark : Properties.Resources.board_light;
+                    fw.Location = new Point(FAIRWAY_SHIFT + (i*FAIRWAY_HEIGHT), 2*FAIRWAY_SHIFT + (j*FAIRWAY_WIDTH));
+                    fw.BackgroundImage = ((i + j)%2 == 1) ? Resources.board_dark : Resources.board_light;
                     gb.Board[j, i] = fw;
                     Controls.Add(fw);
                 }
-                letter = (char)((int)letter + 1);
+                letter = (char) (letter + 1);
             }
-            this.gb.Winner = status.free;
-            this.gb.mainDialog = this;
+            gb.Winner = status.free;
+            gb.mainDialog = this;
             statusBarLabel.Text = "Pro spuštění nové hry nebo načtení uložené hry stiskněte Hra v levém horním rohu";
         }
 
@@ -168,7 +170,7 @@ namespace rocnikacV4
         {
             if (!bw.IsBusy)
                 bw.RunWorkerAsync();
-            this.Activated -= this.FriskaDama_Activated;
+            Activated -= FriskaDama_Activated;
         }
 
         #endregion Inicializace okna / přidání popisků aj.
@@ -179,21 +181,21 @@ namespace rocnikacV4
         {
             if (bw.IsBusy)
                 bw.CancelAsync();
-            this.pauseButton.Click -= pauseButtonResume_Click;
-            this.pauseButton.Click += new System.EventHandler(this.pauseButtonResume_Click);
+            pauseButton.Click -= pauseButtonResume_Click;
+            pauseButton.Click += pauseButtonResume_Click;
         }
 
         private void resumeGame()
         {
             if (!bw.IsBusy)
                 bw.RunWorkerAsync();
-            this.pauseButton.Click -= pauseButtonResume_Click;
-            this.pauseButton.Click += new System.EventHandler(this.pauseButton_Click);
+            pauseButton.Click -= pauseButtonResume_Click;
+            pauseButton.Click += pauseButton_Click;
         }
 
         private void menu_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
-            this.Activated -= this.FriskaDama_Activated;
+            Activated -= FriskaDama_Activated;
         }
 
         #endregion Pozastavení a znovuspuštení hry
@@ -209,21 +211,22 @@ namespace rocnikacV4
             // pokud se soubor podarilo nalezt, zobrazime jej
             if (File.Exists(path))
                 Help.ShowHelp(this, path);
-            // v opacnem pripade zobrazime chybovou hlasku
+                // v opacnem pripade zobrazime chybovou hlasku
             else
             {
                 MessageBox.Show("Nápovědu se nepodařilo nalézt. Soubor je buď poškozen nebo chybí",
-                    "Nápověda nenalezena!",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Warning);
+                                "Nápověda nenalezena!",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Warning);
             }
         }
 
         private void bestMove_Click(object sender, EventArgs e)
         {
             pauseGame();
-            List<Fairway> bestMove = ai.bestMove(this.gb, 3);
-            string move = String.Format("Jako nejlepší tah z krátkodobého hlediska se může jevit tah z {0} na {1}", bestMove[0].Name, bestMove[1].Name);
+            List<Fairway> bestMove = ai.bestMove(gb, 3);
+            string move = String.Format("Jako nejlepší tah z krátkodobého hlediska se může jevit tah z {0} na {1}",
+                                        bestMove[0].Name, bestMove[1].Name);
             MessageBox.Show(move);
         }
 
@@ -234,31 +237,31 @@ namespace rocnikacV4
         private void newGame_Click(object sender, EventArgs e)
         {
             pauseGame();
-            GameSettings gs = new GameSettings(this.gb, true);
+            var gs = new GameSettings(gb, true);
             gs.mainDialog = this;
             gs.ShowDialog();
 
             if (gs.DialogResult == DialogResult.OK)
-                this.bestMove.Enabled = true;
+                bestMove.Enabled = true;
 
-            this.Activated += new System.EventHandler(FriskaDama_Activated);
+            Activated += FriskaDama_Activated;
 
             FriskaDama_Activated(sender, e);
         }
 
         private void saveGame_Click(object sender, EventArgs e)
         {
-            SaveLoad sl = new SaveLoad();
+            var sl = new SaveLoad();
             pauseGame();
-            SaveFileDialog sfd = new SaveFileDialog();
+            var sfd = new SaveFileDialog();
             sfd.Filter = "XML soubor (*.xml)|*.xml";
             sfd.Title = "Uložení hry";
 
-            List<Move> moves = new List<Move>();
+            var moves = new List<Move>();
 
             foreach (string item in History.Items)
             {
-                List<string> values = new List<string>(item.Split(' '));
+                var values = new List<string>(item.Split(' '));
                 values.RemoveAll(c => c.Equals(""));
                 values.RemoveAll(c => c.Equals("->"));
                 // odstranime typ tahu
@@ -270,7 +273,7 @@ namespace rocnikacV4
                 string from = values[1];
                 string to = values[2];
 
-                Move move = new Move(from, to, player);
+                var move = new Move(from, to, player);
                 moves.Add(move);
             }
             try
@@ -290,7 +293,7 @@ namespace rocnikacV4
 
         private void loadGame_Click(object sender, EventArgs e)
         {
-            OpenFileDialog ofd = new OpenFileDialog();
+            var ofd = new OpenFileDialog();
             ofd.Filter = "XML soubor (*.xml)|*.xml";
             ofd.Title = "Načtení uložené hry";
 
@@ -299,15 +302,15 @@ namespace rocnikacV4
                 try
                 {
                     cleanHistory();
-                    SaveLoad sl = new SaveLoad();
-                    this.gb = sl.loadGame(ofd.FileName, gb);
-                    this.gb.drawBoard();
-                    this.gb.colorUp();
+                    var sl = new SaveLoad();
+                    gb = sl.loadGame(ofd.FileName, gb);
+                    gb.drawBoard();
+                    gb.colorUp();
                     pauseGame();
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show(String.Format("Hru se nepodařilo načíst!\n{0}", ex.Message.ToString()));
+                    MessageBox.Show(String.Format("Hru se nepodařilo načíst!\n{0}", ex.Message));
                     cleanHistory();
                 }
             }
@@ -318,7 +321,7 @@ namespace rocnikacV4
         private void settings_Click(object sender, EventArgs e)
         {
             pauseGame();
-            GameSettings gs = new GameSettings(gb, false);
+            var gs = new GameSettings(gb, false);
             gs.mainDialog = this;
             gs.ShowDialog();
 
@@ -340,22 +343,23 @@ namespace rocnikacV4
 
         private void bUndo_Click(object sender, EventArgs e)
         {
-            if (this.History.Items.Count >= 2 && this.History.SelectedIndex > -1)
+            if (History.Items.Count >= 2 && History.SelectedIndex > -1)
             {
-                this.History.SelectedIndex -= 1;
+                History.SelectedIndex -= 1;
                 gb.drawBoard();
                 gb.colorUp();
-            } if (this.History.SelectedIndex == 0)
+            }
+            if (History.SelectedIndex == 0)
             {
-                this.bUndo.Enabled = false;
+                bUndo.Enabled = false;
             }
         }
 
         private void bRedo_Click(object sender, EventArgs e)
         {
-            if (this.History.SelectedIndex < this.History.Items.Count - 1)
+            if (History.SelectedIndex < History.Items.Count - 1)
             {
-                this.History.SelectedIndex += 1;
+                History.SelectedIndex += 1;
             }
         }
 
@@ -365,17 +369,17 @@ namespace rocnikacV4
             statusBarLabel.Text = lbHistory.IndexFromPoint(e.Location).ToString();
 
             if (index == 0)
-                this.bUndo.Enabled = false;
+                bUndo.Enabled = false;
             if (index == lbHistory.Items.Count)
-                this.bRedo.Enabled = false;
+                bRedo.Enabled = false;
         }
 
         private void pauseButtonResume_Click(object sender, EventArgs e)
         {
-            this.pauseButton.Text = "Zastavit hru";
+            pauseButton.Text = "Zastavit hru";
             gb.drawBoard();
-            this.pauseButton.Click -= pauseButtonResume_Click;
-            this.pauseButton.Click += new System.EventHandler(this.pauseButton_Click);
+            pauseButton.Click -= pauseButtonResume_Click;
+            pauseButton.Click += pauseButton_Click;
             if (!bw.IsBusy)
                 bw.RunWorkerAsync();
         }
@@ -383,8 +387,8 @@ namespace rocnikacV4
         private void pauseButton_Click(object sender, EventArgs e)
         {
             gb.drawBoard();
-            this.pauseButton.Click -= pauseButtonResume_Click;
-            this.pauseButton.Click += new System.EventHandler(this.pauseButtonResume_Click);
+            pauseButton.Click -= pauseButtonResume_Click;
+            pauseButton.Click += pauseButtonResume_Click;
 
             if (bw.IsBusy)
                 bw.CancelAsync();
@@ -397,15 +401,15 @@ namespace rocnikacV4
         private void bw_DoWork(object sender, DoWorkEventArgs e)
         {
             gb.drawBoard();
-            Action disableHistory = () => this.History.Enabled = false;
-            Action disablePauseButton = () => this.ButtonPause.Enabled = false;
-            Action enablePauseButton = () => this.ButtonPause.Enabled = true;
+            Action disableHistory = () => History.Enabled = false;
+            Action disablePauseButton = () => ButtonPause.Enabled = false;
+            Action enablePauseButton = () => ButtonPause.Enabled = true;
             History.Invoke(disableHistory);
 
             while (gb.Winner == status.free)
             {
                 string player = gb.PlayingWhite ? "Hraje bílý hráč" : "Hraje černý hráč";
-                this.statusBarLabel.Text = player;
+                statusBarLabel.Text = player;
 
                 if (gb.PlayingWhite)
                 {
@@ -414,7 +418,7 @@ namespace rocnikacV4
                         ButtonPause.Invoke(enablePauseButton);
                         History.Invoke(disableHistory);
                         disableAllFairways(gb);
-                        ai.playAI(gb, this.bw);
+                        ai.playAI(gb, bw);
                     }
                     else
                     {
@@ -431,7 +435,7 @@ namespace rocnikacV4
                         ButtonPause.Invoke(enablePauseButton);
                         History.Invoke(disableHistory);
                         disableAllFairways(gb);
-                        ai.playAI(gb, this.bw);
+                        ai.playAI(gb, bw);
                     }
 
                     else
@@ -443,8 +447,8 @@ namespace rocnikacV4
                     gb.colorUp();
                 }
                 gb.From = null;
-                Action enableHistory = () => this.History.Enabled = true;
-                this.History.Invoke(enableHistory);
+                Action enableHistory = () => History.Enabled = true;
+                History.Invoke(enableHistory);
 
                 if (gb.Winner != status.free)
                 {
@@ -466,7 +470,7 @@ namespace rocnikacV4
                             break;
                     }
                     e.Result = winner;
-                    this.Activated -= this.FriskaDama_Activated;
+                    Activated -= FriskaDama_Activated;
                 }
                 if (bw.CancellationPending)
                 {
@@ -481,7 +485,7 @@ namespace rocnikacV4
         private void bw_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             string winner = null;
-            Rules rules = new Rules();
+            var rules = new Rules();
             rules.checkWinner(gb);
             if (gb.Winner != status.free)
             {
@@ -503,14 +507,14 @@ namespace rocnikacV4
 
             if (e.Cancelled)
             {
-                Action enableHistory = () => this.History.Enabled = true;
-                Action enablePause = () => this.ButtonPause.Enabled = true;
+                Action enableHistory = () => History.Enabled = true;
+                Action enablePause = () => ButtonPause.Enabled = true;
                 History.Invoke(enableHistory);
                 ButtonPause.Invoke(enablePause);
 
                 gb.drawBoard();
                 MessageBox.Show("Hra byla pozastavena");
-                Action setResumeText = () => this.ButtonPause.Text = "Pokračovat";
+                Action setResumeText = () => ButtonPause.Text = "Pokračovat";
                 pauseButton.Invoke(setResumeText);
             }
             else if (e.Error != null)
@@ -520,18 +524,18 @@ namespace rocnikacV4
             else if (winner != null)
             {
                 MessageBox.Show(winner);
-                this.pauseButton.Enabled = false;
+                pauseButton.Enabled = false;
             }
             else
             {
-                this.Activated += this.FriskaDama_Activated;
+                Activated += FriskaDama_Activated;
             }
         }
 
         private void disableAllFairways(Gameboard gb)
         {
             Action<Fairway> disable = (fw) => fw.Enabled = false;
-            foreach (Fairway fw in gb.Board)
+            foreach (var fw in gb.Board)
                 fw.Invoke(disable, fw);
         }
 
@@ -542,7 +546,7 @@ namespace rocnikacV4
             {
                 for (int j = 0; j < GlobalVariables.size; j++)
                 {
-                    if ((i + j) % 2 == 1)
+                    if ((i + j)%2 == 1)
                         gb.Board[i, j].Invoke(enable, gb.Board[i, j]);
                 }
             }

@@ -1,9 +1,25 @@
-﻿using System.Collections.Generic;
+﻿#region
+
+using System.Collections.Generic;
+
+#endregion
 
 namespace rocnikacV4
 {
     public class TreeNode
     {
+        public TreeNode()
+        {
+            childs = new List<TreeNode>();
+        }
+
+        public TreeNode(Fairway over, Fairway to)
+        {
+            dest = to.Name;
+            this.over = over.Name;
+            childs = new List<TreeNode>();
+        }
+
         public string dest { get; set; }
 
         public string over { get; set; }
@@ -12,29 +28,17 @@ namespace rocnikacV4
 
         public List<TreeNode> childs { get; set; }
 
-        public TreeNode()
-        {
-            childs = new List<TreeNode>();
-        }
-
-        public TreeNode(Fairway over, Fairway to)
-        {
-            this.dest = to.Name;
-            this.over = over.Name;
-            childs = new List<TreeNode>();
-        }
-
         public List<string> allRoutes(TreeNode root)
         {
-            List<string> cesty = new List<string>();
+            var cesty = new List<string>();
             string cesta;
 
             if (root.childs.Count > 0)
             {
-                foreach (TreeNode potomek in root.childs)
+                foreach (var potomek in root.childs)
                 {
                     List<string> vysledek = allRoutes(potomek);
-                    foreach (string s in vysledek)
+                    foreach (var s in vysledek)
                     {
                         cesta = root.over + "-" + root.dest + "-" + s;
                         cesty.Add(cesta);

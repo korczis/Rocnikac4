@@ -1,7 +1,12 @@
-﻿using System;
+﻿#region
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Forms;
+using rocnikacV4.Properties;
+
+#endregion
 
 namespace rocnikacV4
 {
@@ -9,21 +14,16 @@ namespace rocnikacV4
     {
         #region Pomocné proměnné
 
-        private Rules rules = new Rules();
+        private readonly Rules rules = new Rules();
 
         #endregion Pomocné proměnné
 
         #region Sloty třídy
 
-        private Fairway[,] board = new Fairway[GlobalVariables.size, GlobalVariables.size];
-        private bool playingWhite;
-        private int whitePlayer;
-        private int blackPlayer;
-        private bool showMoveHelp;
-        private int movesWithoutJump;
+        private static readonly List<string> missedHistory = new List<string>();
+        private Fairway[,] board = new Fairway[GlobalVariables.size,GlobalVariables.size];
         private Fairway from;
-        private status winner;
-        private static List<string> missedHistory = new List<string>();
+        private bool playingWhite;
 
         #endregion Sloty třídy
 
@@ -31,11 +31,7 @@ namespace rocnikacV4
 
         public Friska_dama mainDialog { get; set; }
 
-        public List<string> MissedHistory
-        {
-            get;
-            private set;
-        }
+        public List<string> MissedHistory { get; private set; }
 
         public Fairway[,] Board
         {
@@ -49,31 +45,15 @@ namespace rocnikacV4
             set { playingWhite = value; }
         }
 
-        public int WhitePlayer
-        {
-            get { return whitePlayer; }
-            set { whitePlayer = value; }
-        }
+        public int WhitePlayer { get; set; }
 
-        public int BlackPlayer
-        {
-            get { return blackPlayer; }
-            set { blackPlayer = value; }
-        }
+        public int BlackPlayer { get; set; }
 
-        public bool ShowMoveHelp
-        {
-            get { return showMoveHelp; }
-            set { showMoveHelp = value; }
-        }
+        public bool ShowMoveHelp { get; set; }
 
         public bool StartsWhite { get; set; }
 
-        public int MovesWithoutJump
-        {
-            get { return movesWithoutJump; }
-            set { movesWithoutJump = value; }
-        }
+        public int MovesWithoutJump { get; set; }
 
         public Fairway From
         {
@@ -81,11 +61,7 @@ namespace rocnikacV4
             set { from = value; }
         }
 
-        public status Winner
-        {
-            get { return winner; }
-            set { winner = value; }
-        }
+        public status Winner { get; set; }
 
         #endregion Getry a setry
 
@@ -93,7 +69,7 @@ namespace rocnikacV4
 
         public Gameboard()
         {
-            Board = new Fairway[GlobalVariables.size, GlobalVariables.size];
+            Board = new Fairway[GlobalVariables.size,GlobalVariables.size];
             PlayingWhite = true;
             WhitePlayer = 0;
             BlackPlayer = 0;
@@ -118,7 +94,7 @@ namespace rocnikacV4
 
         private bool isPlayer(int i, int j)
         {
-            return ((i + j) % 2) == 1;
+            return ((i + j)%2) == 1;
         }
 
         public Fairway[,] newBoard()
@@ -130,7 +106,7 @@ namespace rocnikacV4
             {
                 for (int j = 0; j < GlobalVariables.size; j++)
                 {
-                    fw = this.Board[j, i];
+                    fw = Board[j, i];
                     fw.Dests = new List<string>();
                     fw.Overs = new List<string>();
                     fw.Moves = new List<string>();
@@ -148,9 +124,9 @@ namespace rocnikacV4
 
                     else
                         fw.Player = status.free;
-                    if ((i + j) % 2 == 1) fw.Click += new EventHandler(fw_1stClick);
+                    if ((i + j)%2 == 1) fw.Click += fw_1stClick;
                 }
-                letter = (char)((int)letter + 1);
+                letter = (char) (letter + 1);
             }
             return board;
         }
@@ -170,11 +146,11 @@ namespace rocnikacV4
                 {
                     Fairway chosen = gb.Board[i, j];
                     if (moves.Contains(chosen.Name) && gb.ShowMoveHelp)
-                        chosen.BackgroundImage = Properties.Resources.board_dark_active;
-                    else chosen.BackgroundImage = ((i + j) % 2 == 1) ? Properties.Resources.board_dark : Properties.Resources.board_light;
+                        chosen.BackgroundImage = Resources.board_dark_active;
+                    else chosen.BackgroundImage = ((i + j)%2 == 1) ? Resources.board_dark : Resources.board_light;
                 }
             }
-            fw.BackgroundImage = Properties.Resources.board_dark_active_figure;
+            fw.BackgroundImage = Resources.board_dark_active_figure;
         }
 
         // funkce obarvujici figurky, jemiz je mozne tahnout
@@ -186,29 +162,29 @@ namespace rocnikacV4
             {
                 for (int j = 0; j < GlobalVariables.size; j++)
                 {
-                    Fairway chosen = this.Board[i, j];
-                    if (figures.Contains(chosen) && this.ShowMoveHelp)
-                        chosen.BackgroundImage = Properties.Resources.board_dark_active_figure;
-                    else chosen.BackgroundImage = ((i + j) % 2 == 1) ? Properties.Resources.board_dark : Properties.Resources.board_light;
+                    Fairway chosen = Board[i, j];
+                    if (figures.Contains(chosen) && ShowMoveHelp)
+                        chosen.BackgroundImage = Resources.board_dark_active_figure;
+                    else chosen.BackgroundImage = ((i + j)%2 == 1) ? Resources.board_dark : Resources.board_light;
                 }
             }
         }
 
         /// <summary>
-        /// funkce vykreslujici hraci desku
+        ///     funkce vykreslujici hraci desku
         /// </summary>
         public void drawBoard()
         {
-            Fairway[,] board = this.Board;
-            status white = status.whitePlayer;
-            status black = status.blackPlayer;
+            Fairway[,] board = Board;
+            var white = status.whitePlayer;
+            var black = status.blackPlayer;
 
-            foreach (Fairway fw in board)
+            foreach (var fw in board)
             {
                 if (fw.Player == white)
-                    fw.Image = fw.Queen ? Properties.Resources.queen_white : Properties.Resources.figure_white;
+                    fw.Image = fw.Queen ? Resources.queen_white : Resources.figure_white;
                 else if (fw.Player == black)
-                    fw.Image = fw.Queen ? Properties.Resources.queen_black : Properties.Resources.figure_black;
+                    fw.Image = fw.Queen ? Resources.queen_black : Resources.figure_black;
                 else
                     fw.Image = null;
             }
@@ -220,7 +196,7 @@ namespace rocnikacV4
 
         public List<string> possibleMoves(Fairway fw)
         {
-            List<string> possibleMoves = new List<string>();
+            var possibleMoves = new List<string>();
             if (fw.Dests.Count > 0)
             {
                 for (int i = 0; i < fw.Dests.Count; i++)
@@ -230,7 +206,10 @@ namespace rocnikacV4
                         possibleMoves.Add(dests[0]);
                 }
             }
-            else { possibleMoves = fw.Moves; }
+            else
+            {
+                possibleMoves = fw.Moves;
+            }
             return possibleMoves;
         }
 
@@ -243,7 +222,7 @@ namespace rocnikacV4
 
         public Fairway getFigureInBetween(Fairway f, Fairway t)
         {
-            Fairway result = new Fairway();
+            var result = new Fairway();
             for (int i = 0; i < f.Dests.Count; i++)
             {
                 if (f.Dests[i].Equals(t.Name))
@@ -273,29 +252,28 @@ namespace rocnikacV4
         #region Funkce pracující s hrací deskou
 
         /// <summary>
-        /// Funkce nevytvari kopii historie (undo a redo), zobrazeni napovedy a slotu Fairway From
+        ///     Funkce nevytvari kopii historie (undo a redo), zobrazeni napovedy a slotu Fairway From
         /// </summary>
         /// <returns></returns>
-        ///
         public Gameboard gameboardCopy()
         {
-            Gameboard result = new Gameboard();
+            var result = new Gameboard();
 
             //*
-            result.Board = new Fairway[GlobalVariables.size, GlobalVariables.size];
+            result.Board = new Fairway[GlobalVariables.size,GlobalVariables.size];
 
             for (int i = 0; i < GlobalVariables.size; i++)
             {
                 for (int j = 0; j < GlobalVariables.size; j++)
-                    result.Board[i, j] = this.Board[i, j].Clone();
+                    result.Board[i, j] = Board[i, j].Clone();
             }
-            result.playingWhite = this.PlayingWhite;
-            result.BlackPlayer = this.BlackPlayer;
-            result.WhitePlayer = this.WhitePlayer;
-            result.MovesWithoutJump = this.MovesWithoutJump;
-            result.ShowMoveHelp = this.ShowMoveHelp;
-            result.From = this.From;
-            result.Winner = this.Winner;
+            result.playingWhite = PlayingWhite;
+            result.BlackPlayer = BlackPlayer;
+            result.WhitePlayer = WhitePlayer;
+            result.MovesWithoutJump = MovesWithoutJump;
+            result.ShowMoveHelp = ShowMoveHelp;
+            result.From = From;
+            result.Winner = Winner;
             //*/
 
             return result;
@@ -307,8 +285,8 @@ namespace rocnikacV4
 
         private void fw_1stClick(object sender, EventArgs e)
         {
-            var form = Friska_dama.ActiveForm as Friska_dama;
-            Fairway fwClicked = (Fairway)sender;
+            var form = Form.ActiveForm as Friska_dama;
+            var fwClicked = (Fairway) sender;
             List<Fairway> chooseAvailable = rules.choosableFigures(this);
 
             if (fwClicked.Player == status.free)
@@ -318,9 +296,9 @@ namespace rocnikacV4
             }
             else if (chooseAvailable.Contains(fwClicked))
             {
-                if (this.From == null || this.From != fwClicked)
+                if (From == null || From != fwClicked)
                 {
-                    foreach (Fairway fw in this.Board)
+                    foreach (var fw in Board)
                     {
                         fw.Click -= fw_1stClick;
                         fw.Click += fw_2ndClick;
@@ -338,44 +316,44 @@ namespace rocnikacV4
 
         private void fw_2ndClick(object sender, EventArgs e)
         {
-            var form = Friska_dama.ActiveForm as Friska_dama;
+            var form = Form.ActiveForm as Friska_dama;
             BackgroundWorker bw = form.bw;
-            Fairway fwClicked = (Fairway)sender;
+            var fwClicked = (Fairway) sender;
             List<Fairway> playersFigures = rules.choosableFigures(this);
-            List<string> posMoves = possibleMoves(this.From);
+            List<string> posMoves = possibleMoves(From);
 
-            if (fwClicked == this.From)
+            if (fwClicked == From)
             {
-                foreach (Fairway fw in this.Board)
+                foreach (var fw in Board)
                 {
                     fw.Click -= fw_2ndClick;
                     fw.Click += fw_1stClick;
                 }
-                if (this.ShowMoveHelp)
-                    this.colorUp();
-                this.From = null;
+                if (ShowMoveHelp)
+                    colorUp();
+                From = null;
                 form.statusBarLabel.Text = "Vyberte figurku, kterou chcete táhnout";
             }
-            else if (fwClicked != this.From && playersFigures.Contains(fwClicked))
+            else if (fwClicked != From && playersFigures.Contains(fwClicked))
             {
-                this.From = fwClicked;
-                fairwayColorUp(this, this.From);
+                From = fwClicked;
+                fairwayColorUp(this, From);
             }
             else if (posMoves.Contains(fwClicked.Name))
             {
-                addHistory(this.From, fwClicked);
+                addHistory(From, fwClicked);
 
-                rules.makeMove(this.From, fwClicked, this, false);
-                this.Winner = rules.checkWinner(this);
+                rules.makeMove(From, fwClicked, this, false);
+                Winner = rules.checkWinner(this);
 
                 from = null;
-                foreach (Fairway fw in this.Board)
+                foreach (var fw in Board)
                 {
                     fw.Click -= fw_2ndClick;
                     fw.Click += fw_1stClick;
                 }
-                if (this.ShowMoveHelp)
-                    this.colorUp();
+                if (ShowMoveHelp)
+                    colorUp();
                 form.Activate();
                 form.FriskaDama_Activated(sender, e);
             }
@@ -393,7 +371,7 @@ namespace rocnikacV4
 
             if (missedHistory.Count > 0)
             {
-                foreach (string s in missedHistory)
+                foreach (var s in missedHistory)
                     history.Invoke(addHis, s);
                 missedHistory.Clear();
             }
@@ -404,7 +382,7 @@ namespace rocnikacV4
         public void addHistory(Fairway from, Fairway to)
         {
             string typ = from.Jump ? "skok" : "tah";
-            string hrac = this.PlayingWhite ? "Bily hrac:           " : "Cerny hrac:       ";
+            string hrac = PlayingWhite ? "Bily hrac:           " : "Cerny hrac:       ";
             string input = string.Format("{0} {1} -> {2} ({3})", hrac, from.Name, to.Name, typ);
 
             addMissedHistory(input);

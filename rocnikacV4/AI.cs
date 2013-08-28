@@ -1,6 +1,10 @@
-﻿using System;
+﻿#region
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+
+#endregion
 
 namespace rocnikacV4
 {
@@ -8,15 +12,15 @@ namespace rocnikacV4
     {
         #region Pomocné proměnné
 
-        private Rules rules = new Rules();
-        private Random random = new Random();
+        private readonly Random random = new Random();
+        private readonly Rules rules = new Rules();
 
         #endregion Pomocné proměnné
 
         #region Minimax
 
         /// <summary>
-        /// Funkce minimaxu
+        ///     Funkce minimaxu
         /// </summary>
         /// <param name="gb">instance tridy hraci desky</param>
         /// <param name="depth">hloubka minimaxu</param>
@@ -36,7 +40,7 @@ namespace rocnikacV4
                 if (gb.Winner == status.draw)
                     return 0;
             }
-            // pokud je na tahu cerny hrac
+                // pokud je na tahu cerny hrac
             else
             {
                 // a je vitez nastaven na cerneho hrace, vrat MAX
@@ -69,7 +73,7 @@ namespace rocnikacV4
         }
 
         /// <summary>
-        /// Fuknce generujici nejlepsi tah
+        ///     Fuknce generujici nejlepsi tah
         /// </summary>
         /// <param name="gb">instance tridy hraci deska</param>
         /// <param name="depth">hloubka minimaxu</param>
@@ -80,7 +84,7 @@ namespace rocnikacV4
             rules.generateMoves(potomek);
 
             List<Fairway> moves = generateMoves(potomek);
-            List<Fairway> bestMove = new List<Fairway>();
+            var bestMove = new List<Fairway>();
             double bestRank = -GlobalVariables.MAX;
 
             for (int i = 0; i < moves.Count; i += 2)
@@ -111,7 +115,7 @@ namespace rocnikacV4
         }
 
         /// <summary>
-        /// Ohodnocovaci funkce minimaxu
+        ///     Ohodnocovaci funkce minimaxu
         /// </summary>
         /// <param name="gb">instance tridy hraci deska</param>
         /// <returns>hodnotu typu double predstavujici hodnotu pozice</returns>
@@ -125,7 +129,7 @@ namespace rocnikacV4
             double result = 0;
             status playerOnMove = gb.PlayingWhite ? status.whitePlayer : status.blackPlayer;
 
-            foreach (Fairway fw in gb.Board)
+            foreach (var fw in gb.Board)
             {
                 string name = fw.Name;
                 int x = Convert.ToInt32(name.Substring(1));
@@ -140,7 +144,7 @@ namespace rocnikacV4
                         result += smallRand;
                     }
                     // pozice u kraje desky - svisle
-                    if (y == 'A' || y == (char)('A' + GlobalVariables.size - 1))
+                    if (y == 'A' || y == (char) ('A' + GlobalVariables.size - 1))
                     {
                         result += fw.Player == playerOnMove ? -15 : 15;
                         result += largeRand;
@@ -151,7 +155,7 @@ namespace rocnikacV4
                         result += fw.Player == playerOnMove ? -20 : 20;
                         result += xLargeRand;
                     }
-                    // pokud jde o obycejny kamen
+                        // pokud jde o obycejny kamen
                     else
                     {
                         result += fw.Player == playerOnMove ? -5 : 5;
@@ -161,7 +165,7 @@ namespace rocnikacV4
                     //pokud kamen muze skakat
                     if (fw.Jump)
                     {
-                        foreach (string jump in fw.Moves)
+                        foreach (var jump in fw.Moves)
                         {
                             result += fw.Player == playerOnMove ? -10 : 10;
                             result += mediumRand;
@@ -169,11 +173,11 @@ namespace rocnikacV4
                     }
                     else if (fw.StoneMove)
                     {
-                        foreach (string move in fw.Moves)
+                        foreach (var move in fw.Moves)
                             result += fw.Player == playerOnMove ? -2.5 : 2.5;
                     }
 
-                    // pokud je kamen zablokovany
+                        // pokud je kamen zablokovany
                     else
                     {
                         result += fw.Player == playerOnMove ? 15 : -15;
@@ -189,20 +193,20 @@ namespace rocnikacV4
         #region Pomocné metody minimaxu
 
         /// <summary>
-        /// Funkce generujici veskere mozne tahy na hraci desce
+        ///     Funkce generujici veskere mozne tahy na hraci desce
         /// </summary>
         /// <param name="gb">Instance tridy hraci deska</param>
         /// <returns>Vraci pole hracich poli, kde na lichem miste je ulozeno pole odkud bylo tazeno a na sudem miste pole, kam bylo tazeno</returns>
         private List<Fairway> generateMoves(Gameboard gb)
         {
             List<Fairway> movable = rules.choosableFigures(gb);
-            List<Fairway> moves = new List<Fairway>();
+            var moves = new List<Fairway>();
 
-            foreach (Fairway fw in movable)
+            foreach (var fw in movable)
             {
                 List<string> dests = gb.possibleMoves(fw);
 
-                foreach (string destination in dests)
+                foreach (var destination in dests)
                 {
                     moves.Add(fw);
                     moves.Add(gb.getFigure(destination));
@@ -212,21 +216,21 @@ namespace rocnikacV4
         }
 
         /// <summary>
-        /// Funkce generujici pole hracich poli, na ktere jde tahnout
+        ///     Funkce generujici pole hracich poli, na ktere jde tahnout
         /// </summary>
         /// <param name="gb">Instrance tridy hraci deska</param>
         /// <param name="fw">Instance tridy hraci pole</param>
         /// <returns>Vraci List hracich poli, na ktere je mozno figurkou tahnout</returns>
         private List<Fairway> generateDests(Gameboard gb, Fairway fw)
         {
-            List<Fairway> dest = new List<Fairway>();
-            List<String> temp = new List<String>();
+            var dest = new List<Fairway>();
+            var temp = new List<String>();
 
             if (fw.Jump)
             {
                 for (int i = 0; i < fw.Dests.Count; i++)
                 {
-                    foreach (string jump in fw.Dests)
+                    foreach (var jump in fw.Dests)
                     {
                         string[] jumps = jump.Split('-');
                         temp.Add(jumps[0]);
@@ -235,7 +239,7 @@ namespace rocnikacV4
             }
             else temp = fw.Moves;
 
-            foreach (Fairway fair in gb.Board)
+            foreach (var fair in gb.Board)
             {
                 if (temp.Contains(fair.Name))
                     dest.Add(fair);
@@ -314,10 +318,10 @@ namespace rocnikacV4
             string f = bMove[0].Name;
             string t = bMove[1].Name;
 
-            Fairway from = new Fairway();
-            Fairway to = new Fairway();
+            var from = new Fairway();
+            var to = new Fairway();
 
-            foreach (Fairway fw in gb.Board)
+            foreach (var fw in gb.Board)
             {
                 from = fw.Name == f ? fw : from;
                 to = fw.Name == t ? fw : to;
