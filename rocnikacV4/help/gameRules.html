@@ -1,0 +1,42 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Pravidla hry</title>
+</head>
+
+<body>
+<h1>Pravidla hry</h1>
+<table style="float:right">
+  <tr>
+    <td><img src="img/board.png" alt="Hrací deska" width="300" height="300" style="float:right; padding-left:10px"></img></td>
+  </tr>
+  <tr>
+    <td align="center"><i>Obrázek 1.</i></td>
+  </tr>
+</table>
+<h2 id="startSituation">Výchozí situace</h2>
+<ul>
+  <li>Kameny stojí proti sobě na tmavých polích ve ctyřech krajních řadách hrací desky o rozměru 10x10 (viz Obrázek 1.)</li>
+  <li>Na tahu je bílý hráč (<a href="gameSettings.html#startingPlayer">změna začínajícího hráče</a>)</li>
+</ul>
+<h2 id="gameFlow">Průběh hry</h2>
+<ul>
+  <li>Hraje se pouye na tmavých polích, světlá pole se při hře nevyužívají</li>
+  <li>Obyčejný kámen se může pohybovat o jedno pole diagonálně vpřed, ortogonální pohyb ani pohyb diagonálně vzad není běžným kamenům dovolen. (<i>viz kapitola <a href="gameStones.html#normalStone">Kameny - Obyčejný kámen</a></i>)</li>
+  <li>Pokud se obyčejný kámen dostane na konci svého tahu na poslední (resp. první) řadu hrací desky, mění se na dámu.</li>
+  <li>Dáma se pohybuje všemi směry (ortogonálně i diagonálně) o libovolný počet volných polí. Ani ortogonální tah dámy ovšem nemůže končit na světlém poli (<i>viz kapitola <a href="gameStones.html#queenStone">Kameny - dáma</a></i>)</li>
+  <li>Zajímání soupeřových kamenů (obyčejných i dam) se provádí skákáním jako v klasické dámě, a to ve všech směrech (ortogonálně i diagonálně). Při ortogonálním skoku se ignorují světlá pole, skáče se tedy vlastně o 4 pole (na druhém musí být soupeřova figurka a poslendí pole musí být volné (<i>viz kapitola <a href="jumping.html">Skoky</a></i>))</li>
+  <li>Obyčejný kámen smí přeskočit soupeřův kýmen, který se nachází na sousedním poli, a dopadnout na volné pole bezprostředně za přeskočeným kamenem. Přeskočený kámen je odstraněn z desky.</li>
+  <li>Dáma smí při skoku preskočit libovolný počet volných polí, zajámanou soupeřovu figurku a dopadnout na libovolné tmavé pole za ním ve směru skoku.</li>
+  <li>Vícenásobné skoky jsou dovoleny (<i>viz kapitola <a href="jumping.html#multipleJump">Skoky - vícenásobné skoky</a></i>)</li>
+  <li>Skákání je povinné, přičemž je zde navíc povinnost zajmout soupeři figurky s co největším součtem hodnot (dáma se počitá jako 1,5 běžného kamene).</li>
+</ul>
+
+<h2 id="gameEnd">Konec hry</h2>
+<ul>
+<li>Vítězem se stává hráč, který odstraní z desky (nebo zablokuje) všechny soupeřovy kameny.</li>
+<li>Pokud po dobu 30 tahů (60 půltahů) nebyla přeskočená žádná figura, končí hra remízou.</li>
+</ul>
+</body>
+</html>

@@ -1,0 +1,17 @@
+[OPTIONS]
+Compatibility=1.1 or later
+Compiled file=help.chm
+Contents file=Table of Contents.hhc
+Default topic=gameRules.html
+Display compile progress=No
+Language=0x405 Czech (Czech Republic)
+
+
+[FILES]
+gameRules.html
+gameStones.html
+jumping.html
+welcome.htm
+
+[INFOTYPES]
+
