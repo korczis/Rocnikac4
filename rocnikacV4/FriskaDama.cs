@@ -54,13 +54,11 @@ namespace rocnikacV4
         public Button UndoButton
         {
             get { return this.bUndo; }
-            private set;
         }
 
         public Button RedoButton
         {
             get { return this.bRedo; }
-            private set;
         }
 
         public ListBox History
